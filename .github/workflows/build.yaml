@@ -502,3 +502,9 @@ jobs:
 
             - name: Run Build Coverage
               run: ./scripts/build_coverage.sh --yaml
+
+            - name: Upload coverage reports to Codecov
+              uses: codecov/codecov-action@v5
+              with:
+                token: ${{ secrets.CODECOV_TOKEN }}
+                slug: dmaranges-gd/connectedhomeip

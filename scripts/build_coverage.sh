@@ -22,16 +22,16 @@ _install_lcov() {
     if ! lcov --version >/dev/null 2>&1; then
         echo "lcov not installed. Installing..."
         case "$(uname)" in
-            "Darwin")
-                brew install lcov
-                ;;
-            "Linux")
-                sudo apt-get update
-                sudo apt-get install -y lcov
-                ;;
-            *)
-                die
-                ;;
+        "Darwin")
+            brew install lcov
+            ;;
+        "Linux")
+            sudo apt-get update
+            sudo apt-get install -y lcov
+            ;;
+        *)
+            die
+            ;;
         esac
     fi
 }
@@ -87,38 +87,38 @@ file_name=${0##*/}
 # ------------------------------------------------------------------------------
 for i in "$@"; do
     case $i in
-        -h | --help)
-            help
-            exit 1
-            ;;
-        -c=* | --code=*)
-            CODE="${i#*=}"
-            shift
-            ;;
-        --target=*)
-            TEST_TARGET="${i#*=}"
-            shift
-            ;;
-        -o=* | --output_root=*)
-            OUTPUT_ROOT="${i#*=}"
-            COVERAGE_ROOT="$OUTPUT_ROOT/coverage"
-            skip_gn=true
-            shift
-            ;;
-        --yaml)
-            ENABLE_YAML=true
-            shift
-            ;;
-        --python)
-            ENABLE_PYTHON=true
-            shift
-            ;;
-        *)
-            echo "Unknown Option \"$1\""
-            echo
-            help
-            exit 1
-            ;;
+    -h | --help)
+        help
+        exit 1
+        ;;
+    -c=* | --code=*)
+        CODE="${i#*=}"
+        shift
+        ;;
+    --target=*)
+        TEST_TARGET="${i#*=}"
+        shift
+        ;;
+    -o=* | --output_root=*)
+        OUTPUT_ROOT="${i#*=}"
+        COVERAGE_ROOT="$OUTPUT_ROOT/coverage"
+        skip_gn=true
+        shift
+        ;;
+    --yaml)
+        ENABLE_YAML=true
+        shift
+        ;;
+    --python)
+        ENABLE_PYTHON=true
+        shift
+        ;;
+    *)
+        echo "Unknown Option \"$1\""
+        echo
+        help
+        exit 1
+        ;;
     esac
 done
 
@@ -221,21 +221,30 @@ lcov --initial --capture --directory "$OUTPUT_ROOT/obj/src" \
     --exclude="$PWD"/zzz_generated/* \
     --exclude="$PWD"/third_party/* \
     --exclude=/usr/include/* \
+    --ignore-errors inconsistent \
+    --ignore-errors format \
     --output-file "$COVERAGE_ROOT/lcov_base.info"
 
 lcov --capture --directory "$OUTPUT_ROOT/obj/src" \
     --exclude="$PWD"/zzz_generated/* \
     --exclude="$PWD"/third_party/* \
     --exclude=/usr/include/* \
+    --ignore-errors inconsistent \
+    --ignore-errors format \
     --output-file "$COVERAGE_ROOT/lcov_test.info"
 
 lcov --add-tracefile "$COVERAGE_ROOT/lcov_base.info" \
     --add-tracefile "$COVERAGE_ROOT/lcov_test.info" \
+    --ignore-errors inconsistent \
+    --ignore-errors format \
     --output-file "$COVERAGE_ROOT/lcov_final.info"
 
 genhtml "$COVERAGE_ROOT/lcov_final.info" \
     --output-directory "$COVERAGE_ROOT/html" \
     --title "SHA:$(git rev-parse HEAD)" \
+    --ignore-errors inconsistent \
+    --ignore-errors corrupt \
+    --ignore-errors category \
     --header-title "Matter SDK Coverage Report"
 
 cp "$CHIP_ROOT/integrations/appengine/webapp_config.yaml" \

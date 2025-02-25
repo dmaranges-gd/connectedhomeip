@@ -335,11 +335,6 @@ jobs:
                   path: objdir-clone/
                   # objdirs are big; don't hold on to them too long.
                   retention-days: 5
-            - name: Upload coverage reports to Codecov
-              uses: codecov/codecov-action@v5
-              with:
-                token: ${{ secrets.CODECOV_TOKEN }}
-                slug: dmaranges-gd/connectedhomeip
 
     test_suites_darwin:
         name: Test Suites - Darwin
