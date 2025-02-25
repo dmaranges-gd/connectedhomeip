@@ -221,30 +221,21 @@ lcov --initial --capture --directory "$OUTPUT_ROOT/obj/src" \
     --exclude="$PWD"/zzz_generated/* \
     --exclude="$PWD"/third_party/* \
     --exclude=/usr/include/* \
-    --ignore-errors inconsistent \
-    --ignore-errors format \
     --output-file "$COVERAGE_ROOT/lcov_base.info"
 
 lcov --capture --directory "$OUTPUT_ROOT/obj/src" \
     --exclude="$PWD"/zzz_generated/* \
     --exclude="$PWD"/third_party/* \
     --exclude=/usr/include/* \
-    --ignore-errors inconsistent \
-    --ignore-errors format \
     --output-file "$COVERAGE_ROOT/lcov_test.info"
 
 lcov --add-tracefile "$COVERAGE_ROOT/lcov_base.info" \
     --add-tracefile "$COVERAGE_ROOT/lcov_test.info" \
-    --ignore-errors inconsistent \
-    --ignore-errors format \
     --output-file "$COVERAGE_ROOT/lcov_final.info"
 
 genhtml "$COVERAGE_ROOT/lcov_final.info" \
     --output-directory "$COVERAGE_ROOT/html" \
     --title "SHA:$(git rev-parse HEAD)" \
-    --ignore-errors inconsistent \
-    --ignore-errors corrupt \
-    --ignore-errors category \
     --header-title "Matter SDK Coverage Report"
 
 cp "$CHIP_ROOT/integrations/appengine/webapp_config.yaml" \
