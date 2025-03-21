@@ -185,6 +185,8 @@ if [ "$skip_gn" == false ]; then
         # TODO: run python tests.
     fi
 
+    scripts/run_in_build_env.sh "coverage run src/python_testing/*.py --commissioning-method on-network --qr-code MT:-24J0AFN00KA0648G00"
+
     # ----------------------------------------------------------------------------
     # Remove objects we do NOT want included in coverage
     # ----------------------------------------------------------------------------
