@@ -506,9 +506,7 @@ jobs:
             - name: Install requirements
               run: pip install -r requirements.txt
             - name: Run tests and collect coverage
-              run: |
-                source out/python_env/bin/activate
-                coverage run src/python_testing/TC_ACE_1_2.py --qr-code MT:-24J0AFN00KA0648G00
+              run: coverage run src/python_testing/TC_ACE_1_2.py --qr-code MT:-24J0AFN00KA0648G00
             - name: Upload coverage reports to Codecov
               run: |
                 # Replace `linux` below with the appropriate OS
