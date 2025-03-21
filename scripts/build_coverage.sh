@@ -22,16 +22,16 @@ _install_lcov() {
     if ! lcov --version >/dev/null 2>&1; then
         echo "lcov not installed. Installing..."
         case "$(uname)" in
-        "Darwin")
-            brew install lcov
-            ;;
-        "Linux")
-            sudo apt-get update
-            sudo apt-get install -y lcov
-            ;;
-        *)
-            die
-            ;;
+            "Darwin")
+                brew install lcov
+                ;;
+            "Linux")
+                sudo apt-get update
+                sudo apt-get install -y lcov
+                ;;
+            *)
+                die
+                ;;
         esac
     fi
 }
@@ -87,32 +87,32 @@ file_name=${0##*/}
 # ------------------------------------------------------------------------------
 for i in "$@"; do
     case $i in
-    -h | --help)
-        help
-        exit 1
-        ;;
-    -c=* | --code=*)
-        CODE="${i#*=}"
-        shift
-        ;;
-    --target=*)
-        TEST_TARGET="${i#*=}"
-        shift
-        ;;
-    -o=* | --output_root=*)
-        OUTPUT_ROOT="${i#*=}"
-        COVERAGE_ROOT="$OUTPUT_ROOT/coverage"
-        skip_gn=true
-        shift
-        ;;
-    --yaml)
-        ENABLE_YAML=true
-        shift
-        ;;
-    --python)
-        ENABLE_PYTHON=true
-        shift
-        ;;
+        -h | --help)
+            help
+            exit 1
+            ;;
+        -c=* | --code=*)
+            CODE="${i#*=}"
+            shift
+            ;;
+        --target=*)
+            TEST_TARGET="${i#*=}"
+            shift
+            ;;
+        -o=* | --output_root=*)
+            OUTPUT_ROOT="${i#*=}"
+            COVERAGE_ROOT="$OUTPUT_ROOT/coverage"
+            skip_gn=true
+            shift
+            ;;
+        --yaml)
+            ENABLE_YAML=true
+            shift
+            ;;
+        --python)
+            ENABLE_PYTHON=true
+            shift
+            ;;
     *)
         echo "Unknown Option \"$1\""
         echo
@@ -184,8 +184,6 @@ if [ "$skip_gn" == false ]; then
         echo "Running Python tests ..."
         # TODO: run python tests.
     fi
-
-    scripts/run_in_build_env.sh "coverage run src/python_testing/*.py --commissioning-method on-network --qr-code MT:-24J0AFN00KA0648G00"
 
     # ----------------------------------------------------------------------------
     # Remove objects we do NOT want included in coverage
