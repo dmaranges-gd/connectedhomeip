@@ -515,4 +515,4 @@ jobs:
                 # Options are `alpine`, `linux`, `macos`, `windows`
                 curl -Os https://uploader.codecov.io/latest/linux/codecov
                 chmod +x codecov
-                ./codecov -t ${CODECOV_TOKEN}
+                ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f out/coverage/coverage/coverage.xml

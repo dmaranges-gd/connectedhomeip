@@ -36,7 +36,26 @@ _install_lcov() {
     fi
 }
 
+_install_lcov_cobertura() {
+    if ! lcov_cobertura --version >/dev/null 2>&1; then
+        echo "lcov_cobertura not installed. Installing..."
+        case "$(uname)" in
+            "Darwin")
+                pip install lcov_cobertura
+                ;;
+            "Linux")
+                sudo apt-get update
+                pip install lcov_cobertura
+                ;;
+            *)
+                die
+                ;;
+        esac
+    fi
+}
+
 _install_lcov
+_install_lcov_cobertura
 
 _normpath() {
     python3 -c "import os.path; print(os.path.normpath('$@'))"
@@ -182,6 +201,16 @@ if [ "$skip_gn" == false ]; then
     #
     if [ "$ENABLE_PYTHON" == true ]; then
         echo "Running Python tests ..."
+
+        scripts/run_in_python_env.sh \
+            "./scripts/tests/run_python_test.py \
+            --factory-reset \
+             --app \"$OUTPUT_ROOT/chip-all-clusters-app\" \
+             --script src/python_testing/TC_ACE_1_2.py \
+             --script-args \"--qr-code MT:-24J0AFN00KA0648G00\"
+            "
+
+        echo "Finish Python tests ..."
         # TODO: run python tests.
     fi
 
@@ -237,6 +266,11 @@ genhtml "$COVERAGE_ROOT/lcov_final.info" \
     --output-directory "$COVERAGE_ROOT/html" \
     --title "SHA:$(git rev-parse HEAD)" \
     --header-title "Matter SDK Coverage Report"
+
+lcov_cobertura $COVERAGE_ROOT/lcov_final.info \
+    --base-dir src/ \
+    --output $COVERAGE_ROOT/coverage.xml \
+    --demangle
 
 cp "$CHIP_ROOT/integrations/appengine/webapp_config.yaml" \
     "$COVERAGE_ROOT/webapp_config.yaml"
