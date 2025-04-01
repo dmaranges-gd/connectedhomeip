@@ -45,7 +45,7 @@ _install_lcov_cobertura() {
                 ;;
             "Linux")
                 sudo apt-get update
-                pip install lcov_cobertura
+                sudo apt-get install -y lcov_cobertura
                 ;;
             *)
                 die

@@ -494,6 +494,7 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+            - run: apt-get install -y lcov_cobertura
             - name: Checkout submodules & Bootstrap
               uses: ./.github/actions/checkout-submodules-and-bootstrap
               with:
