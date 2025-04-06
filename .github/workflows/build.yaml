@@ -337,13 +337,14 @@ jobs:
                   python -m pip install ./out/controller/python/chip_core-0.0-cp37-abi3-linux_x86_64.whl
                   python -m pip install ./out/controller/python/chip_clusters-0.0-py3-none-any.whl
                   python -m pip install ./out/controller/python/chip_repl-0.0-py3-none-any.whl
+                  python -m pip install coverage
 
             - name: Run Python tests
               shell: bash
               run: |
                   source pyenv/bin/activate
                   cd src/controller/python/test/unit_tests/
-                  python3 -m unittest -v
+                  python3 -m coverage run unittest -v
             - name: Clean previous outputs
               run: rm -rf out pyenv
             - name: Run Python Setup Payload Generator Test
@@ -494,7 +495,6 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-            - run: pip install lcov_cobertura
             - name: Checkout submodules & Bootstrap
               uses: ./.github/actions/checkout-submodules-and-bootstrap
               with:

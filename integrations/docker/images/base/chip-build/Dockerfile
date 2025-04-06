@@ -50,7 +50,6 @@ RUN set -x \
     iwyu \
     jq \
     lcov \
-    lcov_cobertura \
     libavahi-client-dev \
     libavahi-common-dev \
     libcairo2-dev \

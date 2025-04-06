@@ -34,7 +34,6 @@ apt-get install -fy \
     clang-format-9 \
     clang-tidy-9 \
     lcov \
-    lcov_cobertura \
     shellcheck \
     libssl-dev \
     unzip \

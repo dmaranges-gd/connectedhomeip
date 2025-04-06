@@ -36,26 +36,7 @@ _install_lcov() {
     fi
 }
 
-_install_lcov_cobertura() {
-    if ! lcov_cobertura --version >/dev/null 2>&1; then
-        echo "lcov_cobertura not installed. Installing..."
-        case "$(uname)" in
-            "Darwin")
-                pip install lcov_cobertura
-                ;;
-            "Linux")
-                sudo apt-get update
-                pip install lcov_cobertura
-                ;;
-            *)
-                die
-                ;;
-        esac
-    fi
-}
-
 _install_lcov
-_install_lcov_cobertura
 
 _normpath() {
     python3 -c "import os.path; print(os.path.normpath('$@'))"
@@ -266,11 +247,6 @@ genhtml "$COVERAGE_ROOT/lcov_final.info" \
     --output-directory "$COVERAGE_ROOT/html" \
     --title "SHA:$(git rev-parse HEAD)" \
     --header-title "Matter SDK Coverage Report"
-
-lcov_cobertura $COVERAGE_ROOT/lcov_final.info \
-    --base-dir src/ \
-    --output $COVERAGE_ROOT/coverage.xml \
-    --demangle
 
 cp "$CHIP_ROOT/integrations/appengine/webapp_config.yaml" \
     "$COVERAGE_ROOT/webapp_config.yaml"
