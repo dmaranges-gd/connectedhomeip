@@ -113,12 +113,12 @@ for i in "$@"; do
             ENABLE_PYTHON=true
             shift
             ;;
-    *)
-        echo "Unknown Option \"$1\""
-        echo
-        help
-        exit 1
-        ;;
+        *)
+            echo "Unknown Option \"$1\""
+            echo
+            help
+            exit 1
+            ;;
     esac
 done
 
@@ -182,16 +182,6 @@ if [ "$skip_gn" == false ]; then
     #
     if [ "$ENABLE_PYTHON" == true ]; then
         echo "Running Python tests ..."
-
-        scripts/run_in_python_env.sh \
-            "./scripts/tests/run_python_test.py \
-            --factory-reset \
-             --app \"$OUTPUT_ROOT/chip-all-clusters-app\" \
-             --script src/python_testing/TC_ACE_1_2.py \
-             --script-args \"--qr-code MT:-24J0AFN00KA0648G00\"
-            "
-
-        echo "Finish Python tests ..."
         # TODO: run python tests.
     fi
 

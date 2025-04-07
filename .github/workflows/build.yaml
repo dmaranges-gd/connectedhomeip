@@ -343,7 +343,8 @@ jobs:
               run: |
                   source pyenv/bin/activate
                   cd src/controller/python/test/unit_tests/
-                  python3 -m coverage run unittest -v
+                  python3 -m coverage run -m unittest -v
+                  coverage xml
             - name: Upload coverage reports to Codecov
               run: |
                 # Replace `linux` below with the appropriate OS
