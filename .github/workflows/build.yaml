@@ -346,13 +346,11 @@ jobs:
                   cd src/controller/python/test/unit_tests/
                   python3 -m coverage run -m unittest -v
                   coverage xml
-            - name: Upload coverage reports to Codecov
-              run: |
-                # Replace `linux` below with the appropriate OS
-                # Options are `alpine`, `linux`, `macos`, `windows`
-                curl -Os https://uploader.codecov.io/latest/linux/codecov
-                chmod +x codecov
-                ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f out/coverage/coverage/coverage.xml
+                  curl -Os https://uploader.codecov.io/latest/linux/codecov
+                  chmod +x codecov
+                  ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f coverage.xml
+                  rm -rf coverage.xml
+
             - name: Clean previous outputs
               run: rm -rf out pyenv
             - name: Run Python Setup Payload Generator Test
