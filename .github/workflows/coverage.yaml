@@ -64,6 +64,7 @@ jobs:
                   source pyenv/bin/activate
                   python -m ensurepip --upgrade
                   python -m pip install coverage
+                  python -m pip install lcov-cobertura
                   python -m pip install ./out/controller/python/chip_core-0.0-cp37-abi3-linux_x86_64.whl
                   python -m pip install ./out/controller/python/chip_clusters-0.0-py3-none-any.whl
                   python -m pip install ./out/controller/python/chip_repl-0.0-py3-none-any.whl
@@ -75,6 +76,8 @@ jobs:
                 cd src/controller/python/test/unit_tests/
                 python -m coverage run -m unittest -v
                 coverage xml
+            - name: Run Build Coverage
+              run: ./scripts/build_coverage.sh --yaml
             - name: Upload coverage reports to Codecov with GitHub Action
               uses: codecov/codecov-action@v5
               env:

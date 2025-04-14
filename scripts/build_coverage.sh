@@ -36,7 +36,25 @@ _install_lcov() {
     fi
 }
 
+_install_lcov_cobertura() {
+    if ! lcov_cobertura_ --version >/dev/null 2>&1; then
+        echo "lcov not installed. Installing..."
+        case "$(uname)" in
+            "Darwin")
+                pip install lcov-cobertura
+                ;;
+            "Linux")
+                sudo pip install lcov-cobertura
+                ;;
+            *)
+                die
+                ;;
+        esac
+    fi
+}
+
 _install_lcov
+_install_lcov_cobertura
 
 _normpath() {
     python3 -c "import os.path; print(os.path.normpath('$@'))"
@@ -218,7 +236,6 @@ fi
 mkdir -p "$COVERAGE_ROOT"
 
 lcov --initial --capture --directory "$OUTPUT_ROOT/obj/src" \
-    --ignore-errors inconsistent \
     --exclude="$PWD"/zzz_generated/* \
     --exclude="$PWD"/third_party/* \
     --exclude=/usr/include/* \
@@ -226,7 +243,6 @@ lcov --initial --capture --directory "$OUTPUT_ROOT/obj/src" \
     --output-file "$COVERAGE_ROOT/lcov_base.info"
 
 lcov --capture --directory "$OUTPUT_ROOT/obj/src" \
-    --ignore-errors inconsistent \
     --exclude="$PWD"/zzz_generated/* \
     --exclude="$PWD"/third_party/* \
     --exclude=/usr/include/* \
@@ -236,7 +252,6 @@ lcov --capture --directory "$OUTPUT_ROOT/obj/src" \
 lcov --ignore-errors inconsistent \
     --add-tracefile "$COVERAGE_ROOT/lcov_base.info" \
     --add-tracefile "$COVERAGE_ROOT/lcov_test.info" \
-    --ignore-errors inconsistent \
     --output-file "$COVERAGE_ROOT/lcov_final.info"
 
 genhtml "$COVERAGE_ROOT/lcov_final.info" \
@@ -244,6 +259,8 @@ genhtml "$COVERAGE_ROOT/lcov_final.info" \
     --output-directory "$COVERAGE_ROOT/html" \
     --title "SHA:$(git rev-parse HEAD)" \
     --header-title "Matter SDK Coverage Report"
+
+lcov_cobertura out/coverage/coverage/lcov_final.info
 
 cp "$CHIP_ROOT/integrations/appengine/webapp_config.yaml" \
     "$COVERAGE_ROOT/webapp_config.yaml"
