@@ -64,6 +64,7 @@ jobs:
                   source pyenv/bin/activate
                   python -m ensurepip --upgrade
                   python -m pip install coverage
+                  python -m pip install lcov
                   python -m pip install lcov-cobertura
                   python -m pip install ./out/controller/python/chip_core-0.0-cp37-abi3-linux_x86_64.whl
                   python -m pip install ./out/controller/python/chip_clusters-0.0-py3-none-any.whl
@@ -86,5 +87,6 @@ jobs:
               shell: bash
               run: |
                 rm -rf out pyenv
+                rm coverage.xml
                 rm src/controller/python/test/unit_tests/coverage.xml
                 rm -rf src/controller/python/test/unit_tests/.coverage
