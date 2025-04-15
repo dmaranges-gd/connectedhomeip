@@ -60,6 +60,7 @@ jobs:
             - name: Setup test python environment
               shell: bash
               run: |
+                scripts/run_in_build_env.sh 'scripts/examples/gn_build_example.sh examples/chip-tool out/'
                 scripts/run_in_build_env.sh 'virtualenv pyenv'
                 source pyenv/bin/activate
                 python -m ensurepip --upgrade
@@ -77,8 +78,15 @@ jobs:
                 cd src/controller/python/test/unit_tests/
                 python -m coverage run -m unittest -v
                 coverage xml
+
+            - name: Checkout submodules & Bootstrap
+              uses: ./.github/actions/checkout-submodules-and-bootstrap
+              with:
+                platform: linux
+                bootstrap-log-name: bootstrap-logs-linux-${{ matrix.build_variant }}${{ matrix.chip_tool }} 
             - name: Run Build Coverage
               run: ./scripts/build_coverage.sh --yaml
+              
             - name: Upload coverage reports to Codecov with GitHub Action
               uses: codecov/codecov-action@v5
               env:
