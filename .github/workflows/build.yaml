@@ -43,7 +43,7 @@ jobs:
         if: github.actor != 'restyled-io[bot]'
 
         container:
-            image: ghcr.io/project-chip/chip-build:112
+            image: ghcr.io/project-chip/chip-build:125
             volumes:
                 - "/:/runner-root-volume"
                 - "/tmp/log_output:/tmp/test_logs"
@@ -131,7 +131,7 @@ jobs:
         if: github.actor != 'restyled-io[bot]'
 
         container:
-            image: ghcr.io/project-chip/chip-build:112
+            image: ghcr.io/project-chip/chip-build:125
             volumes:
                 - "/:/runner-root-volume"
                 - "/tmp/log_output:/tmp/test_logs"
@@ -210,12 +210,17 @@ jobs:
                   ./scripts/run_in_build_env.sh "./scripts/run_codegen_targets.sh out/sanitizers"
             - name: Find changed files
               id: changed-files
-              uses: tj-actions/changed-files@v45
+              uses: tj-actions/changed-files@v46
+              with:
+                # Exclude all files under "third_party/"
+                files-ignore: |
+                  third_party/
+
             - name: Clang-tidy validation
               # NOTE: clang-tidy crashes on CodegenDataModel_Write due to Nullable/std::optional check.
               #       See https://github.com/llvm/llvm-project/issues/97426
               env:
-                  ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+                  ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.changed_files }}
               run: |
                   touch out/changed_files.txt
                   for file in ${ALL_CHANGED_FILES}; do
@@ -300,7 +305,7 @@ jobs:
         if: github.actor != 'restyled-io[bot]'
 
         container:
-            image: ghcr.io/project-chip/chip-build:112
+            image: ghcr.io/project-chip/chip-build:125
             volumes:
                 - "/:/runner-root-volume"
                 - "/tmp/log_output:/tmp/test_logs"
@@ -334,33 +339,16 @@ jobs:
                   scripts/run_in_build_env.sh 'virtualenv pyenv'
                   source pyenv/bin/activate
                   python -m ensurepip --upgrade
-                  python -m pip install coverage
                   python -m pip install ./out/controller/python/chip_core-0.0-cp37-abi3-linux_x86_64.whl
                   python -m pip install ./out/controller/python/chip_clusters-0.0-py3-none-any.whl
                   python -m pip install ./out/controller/python/chip_repl-0.0-py3-none-any.whl
+                  scripts/run_in_build_env.sh 'scripts/examples/gn_build_example.sh examples/chip-tool out/'
+                  python -m pip install -r scripts/setup/requirements.setuppayload.txt
 
-            - name: Run Python tests
-              shell: bash
-              run: |
-                  source pyenv/bin/activate
-                  cd src/controller/python/test/unit_tests/
-                  python3 -m coverage run -m unittest -v
-                  coverage xml
-                  curl -Os https://uploader.codecov.io/latest/linux/codecov
-                  chmod +x codecov
-                  ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f coverage.xml
-                  rm -rf coverage.xml
-
-            - name: Clean previous outputs
-              run: rm -rf out pyenv
             - name: Run Python Setup Payload Generator Test
               shell: bash
               run: |
-                  scripts/run_in_build_env.sh 'scripts/examples/gn_build_example.sh examples/chip-tool out/'
-                  scripts/run_in_build_env.sh 'virtualenv pyenv'
                   source pyenv/bin/activate
-                  python -m ensurepip --upgrade
-                  python -m pip install -r scripts/setup/requirements.setuppayload.txt
                   python3 src/setup_payload/tests/run_python_setup_payload_test.py out/chip-tool
             - name: Run revocation set generation tests
               run: scripts/run_in_build_env.sh 'python3 -m unittest -v credentials/generate_revocation_set.py'
@@ -372,7 +360,7 @@ jobs:
         if: github.actor != 'restyled-io[bot]'
 
         container:
-            image: ghcr.io/project-chip/chip-build:112
+            image: ghcr.io/project-chip/chip-build:125
             volumes:
                 - "/:/runner-root-volume"
                 - "/tmp/log_output:/tmp/test_logs"
@@ -448,7 +436,7 @@ jobs:
                   ./scripts/run_in_build_env.sh "./scripts/run_codegen_targets.sh out/default"
             - name: Find changed files
               id: changed-files
-              uses: tj-actions/changed-files@v45
+              uses: tj-actions/changed-files@v46
             - name: Clang-tidy validation
               # NOTE: clang-tidy crashes on CodegenDataModel_Write due to Nullable/std::optional check.
               #       See https://github.com/llvm/llvm-project/issues/97426
@@ -494,7 +482,7 @@ jobs:
         runs-on: ubuntu-latest
 
         container:
-            image: ghcr.io/project-chip/chip-build:112
+            image: ghcr.io/project-chip/chip-build:125
             options: --privileged --sysctl "net.ipv6.conf.all.disable_ipv6=0
                 net.ipv4.conf.all.forwarding=0 net.ipv6.conf.all.forwarding=0"
 

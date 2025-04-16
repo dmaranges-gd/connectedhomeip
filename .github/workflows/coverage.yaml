@@ -25,15 +25,15 @@ jobs:
     build_linux_python_lib:
         name: Build on Linux (python_lib)
 
-        if: github.actor != 'restyled-io[bot]'
         runs-on: ubuntu-latest
+        if: github.actor != 'restyled-io[bot]'
 
         container:
             image: ghcr.io/project-chip/chip-build:125
             volumes:
                 - "/:/runner-root-volume"
                 - "/tmp/log_output:/tmp/test_logs"
-            options: --privileged --sysctl "net.ipv6.conf.all.disable_ipv6=1
+            options: --sysctl "net.ipv6.conf.all.disable_ipv6=1
                 net.ipv4.conf.all.forwarding=1 net.ipv6.conf.all.forwarding=1"
 
         steps:
@@ -45,7 +45,6 @@ jobs:
               env:
                   CONCURRENCY_CONTEXT: ${{ github.ref }}-${{ github.workflow }}-${{ (github.event_name == 'pull_request' && github.event.number) || (github.event_name == 'workflow_dispatch' && github.run_number) || github.sha }}
               run: echo "$CONCURRENCY_CONTEXT"
-
             - name: Checkout
               uses: actions/checkout@v4
             - name: Checkout submodules & Bootstrap
@@ -58,43 +57,40 @@ jobs:
                   scripts/build/gn_gen.sh --args="enable_rtti=true chip_config_memory_debug_checks=false chip_config_memory_debug_dmalloc=false chip_generate_link_map_file=false"
                   scripts/run_in_build_env.sh "ninja -C ./out"
                   scripts/tests/gn_tests.sh
-
-            - name: Setup lcov-cobertura
-              run: |
-                scripts/run_in_build_env.sh 'virtualenv pyenv'
-                source pyenv/bin/activate
-                python -m pip install lcov-cobertura
-
-            - name: Run Build Coverage
-              run: |
-                scripts/run_in_build_env.sh 'scripts/examples/gn_build_example.sh examples/chip-tool out/'
-                ./scripts/build_coverage.sh --yaml
-
             - name: Setup test python environment
               shell: bash
               run: |
-                source pyenv/bin/activate
-                python -m ensurepip --upgrade
-                python -m pip install coverage
-                python -m pip install -r scripts/setup/requirements.setuppayload.txt
+                  scripts/run_in_build_env.sh 'virtualenv pyenv'
+                  source pyenv/bin/activate
+                  python -m ensurepip --upgrade
+                  python -m pip install coverage
 
             - name: Run Python tests
               shell: bash
               run: |
                 source pyenv/bin/activate
-                ./scripts/build_coverage.sh --yaml
                 cd src/controller/python/test/unit_tests/
                 python -m coverage run -m unittest -v
                 coverage xml
+            - name: clean environment
+              shell: bash
+              run: |
+                rm -rf out pyenv
+
+            - name: Setup environment
+              shell: bash
+              run: |
+                scripts/run_in_build_env.sh 'virtualenv pyenv'
+                source pyenv/bin/activate
+                python -m ensurepip --upgrade
+                python -m pip install lcov-cobertura
+
+            - name: Run Build Coverage
+              run: |
+                source pyenv/bin/activate
+                ./scripts/build_coverage.sh --yaml
 
             - name: Upload coverage reports to Codecov with GitHub Action
               uses: codecov/codecov-action@v5
               env:
                 CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-            - name: clean output
-              shell: bash
-              run: |
-                rm -rf out pyenv
-                rm coverage.xml
-                rm src/controller/python/test/unit_tests/coverage.xml
-                rm -rf src/controller/python/test/unit_tests/.coverage
