@@ -55,6 +55,7 @@ jobs:
 
             - name: Setup lcov-cobertura
               run: |
+                scripts/run_in_build_env.sh 'virtualenv pyenv'
                 source pyenv/bin/activate
                 python -m pip install lcov-cobertura
 
@@ -66,7 +67,6 @@ jobs:
             - name: Setup test python environment
               shell: bash
               run: |
-                scripts/run_in_build_env.sh 'virtualenv pyenv'
                 source pyenv/bin/activate
                 python -m ensurepip --upgrade
                 python -m pip install coverage
