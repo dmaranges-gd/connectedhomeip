@@ -121,6 +121,7 @@ RUN set -x \
     && pip3 install --break-system-packages --no-cache-dir --break-system-packages \
     attrs \
     cxxfilt \
+    coverage \
     ghapi \
     mobly \
     portpicker \
