@@ -542,7 +542,9 @@ jobs:
                 bootstrap-log-name: bootstrap-logs-linux-${{ matrix.build_variant }}${{ matrix.chip_tool }}
 
             - name: Run Build Coverage
-              run: ./scripts/build_coverage.sh --yaml
+              run: |
+                python -m pip install gcovr
+                ./scripts/build_coverage.sh --yaml
 
             - name: Convert output file
               run: |

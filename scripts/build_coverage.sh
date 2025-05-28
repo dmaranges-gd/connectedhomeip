@@ -239,6 +239,12 @@ lcov --ignore-errors inconsistent \
     --ignore-errors inconsistent \
     --output-file "$COVERAGE_ROOT/lcov_final.info"
 
+gcovr --exclude=zzz_generated/ \
+    --exclude=third_party/ \
+    --include=src/ \
+    --gcov-ignore-parse-errors \
+    --xml="$COVERAGE_ROOT"/coverage.xml
+
 genhtml "$COVERAGE_ROOT/lcov_final.info" \
     --ignore-errors inconsistent \
     --output-directory "$COVERAGE_ROOT/html" \
